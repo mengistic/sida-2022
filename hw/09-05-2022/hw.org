@@ -1,0 +1,6 @@
+
+
+* Exercise 1:
+
+This is math $x^2+1=0$.
+\[\int_{0}^{\infty}e^{-x^2}=\frac{\sqrt{\pi}}{2}\]

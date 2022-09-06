@@ -1,0 +1,16 @@
+
+
+* 05-08-2022
+
+- logical error
+- syntax error
+- String is a sequence.
+- material: http://yunes.informatique.univ-paris-diderot.fr/en/jbys-webspace/
+
+** array (list)
+
+array is collection of objects. ~object~ can be in different datatype,
+but it's not recomended in practise.
+
+
+

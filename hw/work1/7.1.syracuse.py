@@ -26,11 +26,22 @@ def hft(n: int) -> int:
     L = len(s_arr)
 
     for i in range(L):
-        s1 = s_arr[clamp(i, 0, L)]
-        s2 = s_arr[clamp(i+1, 0, L)]
+        s1 = s_arr[clamp(i, 0, L-1)]
+        s2 = s_arr[clamp(i+1, 0, L-1)]
 
         if (s1>=n and s2<n): return i
         
 
-print(hft(15))
+def hft2() -> int:
+    n = 3
+    s_arr = [1, 4, 5, 7, 2, 1,  9, 3, 8, 10]
+    L = len(s_arr)
+
+    for i in range(L):
+        s1 = s_arr[clamp(i, 0, L-1)]
+        s2 = s_arr[clamp(i+1, 0, L-1)]
+
+        if (s1>=n and s2<n): return i
+
+print(hft2())
 

@@ -1,0 +1,123 @@
+
+#+TITLE: Homework: Summer School on Algorithms and Programming in Python
+#+AUTHOR: Sivmeng HUN
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper, 11pt]
+#+LATEX_HEADER: \input{preamble.tex}
+
+* Homework 1
+
+** Exercise 4: For
+Create a script named ~piapprox.py~ that let approximate $\pi$
+Gregory-Leibnitz series:
+$$\pi = 4\sum_{n=0}^{\infty}\frac{(-1)^n}{2n+1}.$$
+#+begin_src python
+  pi = 0
+  N = int(input("Sum to? "))
+
+  for n in range(N):
+      pi += ( 4 * (-1)**n )/(2*n+1)
+
+  print(pi)
+#+end_src
+
+Create a script named ~pibyrandom.py~ that computes an approximation of $\pi$ by
+Monte-Carlo’s method, i.e. by choosing random points in the unit square, and counting the
+proportion of them that lies in the unit circle (distance from origin $\leq 1$).
+#+begin_src python
+  N = int(input("Sum to? "))
+  inside = 0
+
+  for i in range(N):
+      x = random.random()
+      y = random.random()
+      if ( x*x + y*y <= 1 ): inside += 1
+
+  pi = 4 * (inside)/N
+  print(pi)
+#+end_src
+** Exercise 5: While
+Create and edit a new script name testwhile.py that let the user input integer values,
+#+begin_src python
+  sum = 0
+  n = int(input("value? "))
+
+  while(n != 0):
+      sum += n
+      n = int(input("value? "))
+  print(sum)
+#+end_src
+
+
+
+
+
+** Exercise 7: Tuples
+
+1. Create a script named ~syracuse.py~, which computes for every integer $n\in[1,100]$
+the flying time, the high fly time and the maximum altitude of its Syracuse sequence.
+Reminder: Let $f$ the function defined over positive integers be:
+
+\begin{align*}
+f(n)=
+\begin{cases}
+\frac{n}{2} &\text{if $n$ is even}\\
+3n+1        &\text{if $n$ is odd}
+\end{cases}
+\end{align*}
+
+The Syracuse sequence $S(n)$ is definde by
+\begin{align*}
+&S_0(n)=n\\
+&S_{i+1}(n)=f(S_i(n))
+\end{align*}
+
+The flying time of $S(n)$, $\mathrm{ft}(n)$, is the smallest $i$ such that
+$S_i(n)=1$ (after that point the sequence is obviously degenerated to the trivial cycle $1,4,2,\dots$).
+
+The maximum altitude of $S(n)$ is defined as $\mathrm{ma}(n)=\max\{S_i(n)\}$.
+
+The high fly time of $S(n)$, $\mathrm{hft}(n)$, is $i$ such that $\forall j\in[0,i]$, $S_j(n)\geq n$
+and $S_{i+1}(n)<n$.
+
+#+begin_src python
+  def syacuse(n: int):
+      ft = 0
+      ma = n
+      hft = 0
+
+      S = n
+      output_S = "S(" + str(n) + "): " + str(n) + " "
+      check_hft = True
+
+      while(S>1):
+          if S%2==0: S //= 2
+          else:
+              S = 3*S + 1
+              if (ma<S): ma = S
+
+          output_S += str(S) + " "
+          ft += 1
+
+          if (S<n): check_hft = False
+          if check_hft: hft += 1
+
+      print(output_S)
+      print(f"ft({n}) = {ft}")
+      print(f"ma({n}) = {ma}")
+      print(f"hft({n}) = {hft}\n")
+
+  N = int(input("Syracuse of ?: "))
+  syacuse(N)
+#+end_src
+
+
+2. Modify ~syracuse.py~ so that it produces the results for all $n\in[1,N]$
+   ($N$ is inputed by the user.)
+   #+begin_src python
+     N = int(input("Enter value of compute: "))
+
+     for n in range(1, N+1): syracuse(n)
+   #+end_src
+

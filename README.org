@@ -1,16 +1,267 @@
 
+#+TITLE: Summer School on Algorithms and Programming in Python
+#+AUTHOR: Sivmeng HUN
+#+OPTIONS: toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper, 11pt]
+#+LATEX_HEADER: \input{preamble.tex}
 
-* 05-08-2022
+* Introduction
+The materials can be found at prof. [[http://yunes.informatique.univ-paris-diderot.fr/workshop-at-rupp/][Jean Baptise]]'s website.
 
-- logical error
-- syntax error
-- String is a sequence.
-- material: http://yunes.informatique.univ-paris-diderot.fr/en/jbys-webspace/
+* Sorting Algorithm
+** Selection Sort
+The selection sort algorithm sorts an array by repeatedly finding the
+minimum element (considering ascending order) from the unsorted part
+and putting it at the beginning.
 
-** array (list)
+- Suppose the array ~a = [10, 6, 3, 2, 12]~ and we want to sort this array.
+- First step: We find the smallest element in ~a~, call it ~a[m]~.
+  Then we swap the position of ~a[m]~ and ~a[0]~. In our example,
+  we would get ~a = [2, 6, 3, 10, 12]~
+- Second Step: We find the smallest element in ~a[1:n]~, call it ~a[m]~.
+  Then we swap the position of ~a[m]~ and ~a[1]~. In our example, we
+  obtain ~a = [2, 3, 6, 10, 12]~.
+- In general, for the ~i~ -th step, we find the index of the smallest 
+  element in ~a[i+1:n]~, then swap it with the ~a[i]~ element
+  (if neccessary).
 
-array is collection of objects. ~object~ can be in different datatype,
-but it's not recomended in practise.
+Before we implement it, note that this algorithm needs two main ideas,
+i.e. find the minimum, and swapping element. In practise it's common
+to implement these as separate functions for ease of readabilty. However,
+here I'm going the write a whole algorithm in just one function.
+
+#+begin_src python
+  def sort_selection(a):
+      L = len(a)
+      temp = 0
+
+      for i in range(0, L-1):
+
+          # find the index of the
+          # minimum element
+          m = i+1
+          for j in range(i+1, L):
+              if ( a[m]>a[j] ):
+                  m = j
+  
+          # swapping the a[m] and a[i].
+          if ( a[i]>a[m] ):
+              temp = a[i]
+              a[i] = a[m]
+              a[m] = temp
+
+          return a
+#+end_src
+
+The time complexity function for this algorithm is $O(n^2)$,
+with a constant space complexity.
+
+** Insertion Sort
+*** Insertion Sort by Swap
+This algorithm is a little hard to discribe.
+The [[https://www.geeksforgeeks.org/insertion-sort/][geeksforgeeks]] website did a great job
+explaining the algorithm in detail.
+
+#+begin_src python
+  def sort_insertion(a):
+      for i in range(1, len(a)):
+          j = i
+          while(j>0 and a[j]<a[j-1]):
+              temp = a[j]
+              a[j]=a[j-1]
+              a[j-1]=temp
+              j -= 1
+
+      return a
+#+end_src
+
+This algorithm also has time complexity function $O(n^2)$.
+
+*** Insertion Sort By Shift
+However, if we take a look closely on the numbers of
+comparisions and the numbers of assignements, they are
+$O(n)$. We can make it better.
+
+First, let's improve the numbers of assignments. The idea is
+to shift the array, rather than swapping like above. 
+
+#+begin_src python
+  def sort_insertion_shift(a):
+      for i in range(1, len(a)):
+          temp = a[i]
+          j = i-1
+          while(j>=0 and a[j]>temp):
+              a[j+1] = a[j]
+              j-=1
+
+          a[j+1] = temp
+
+      return a
+#+end_src
+
+*** Insertion Sory by Dichotomy (binary)
+Now it's time to improve the numbers of comparisions
+in our algorithm. For Insertion Algorithm, at the
+~i~-th step in the  ~for loop~ , the array ~a[0:i]~ is
+already sorted. So we can use the idea in
+Binary Search (Dichotomy), i.e. to divide the array into
+halfs, then throw the one, and keep dividing.
+
+#+begin_src python
+  # use binary search to find the right
+  # index to insert
+  def binary_insert(a, x, begin, end):
+      n = end-begin
+      if(a[begin]>x): return 0
+      elif(a[end]<x): return end+1
+
+      while(n>1):
+          mid = (begin+end)//2
+          if   (a[mid]==x): return  mid+1
+          elif (a[mid]>x) : end   = mid
+          else            : begin = mid+1
+          n //= 2
+
+      if a[begin]>x: return begin
+      return begin+1
 
 
+  # our algorithm
+  def sort_insertion_binary(a):
+      for i in range(1, len(a)):
+          temp = a[i]
+          here = binary_insert(a,temp, 0,i-1)
 
+          if here<i:
+              for j in range(i, here, -1):
+                  a[j] = a[j-1]
+              a[here] = temp
+
+      return a
+#+end_src
+
+** Divide and Conquer (DAC)
+Divide and conquer is a technique involves in dividing the problem
+into smaller sub-problems, and solve sub-problems by calling
+recursively until they're all solved. Then combine the sub-problems
+to get the final solution of the whole problem.
+
+#+begin_exercise
+Given an array whose elements are integer representing
+the temperature a day. We call a day /freeze day/
+if its temperature is negative. Find the largest length
+of consecutive freeze days.
+#+end_exercise
+
+There are two ways to approach this problem. First is
+the iterative way. And second is the recursive way
+which uses DAC strategy.
+
+Here is the iterative way:
+#+begin_src python
+def freeze(T):
+    L = len(T)
+    counter, length = 0, 0
+
+    for i in range(L):
+        if T[i]>=0: counter=0
+        else:
+            counter+=1 
+            if(i>=L-1 or T[i+1]>=0 and length<counter): length=counter
+        
+    return T
+#+end_src
+
+* Comparision of These Algorithms
+Next, we might want to compare the performance of these two
+algorithms. But what to compare? We can compare the time
+require to run each function of course. However, counting
+the number of swaps is okay too. In this note, I'll compare
+the time require, and I'll let you make the number of swaps
+instead.
+
+First let's calculate the time both algorithms spend on running.
+Let's say we make a random array of length $N$, we would like
+to calculate the time, but if we plot the graph like this it won't
+look so smooth. So for each $N$, we made, say $10$, experiences
+and average the time.
+
+Now let's implement this in Python. Notice that when the data is
+computed, it's stored inside a file called ~data_time.txt~ in the
+same directory.
+
+#+begin_src python
+  import random as rd
+  import time 
+
+  # generate a random array of size n
+  def gen_array(n: int):
+      a = []
+      for i in range(n):
+          a.append(rd.randint(1, n*n))
+      return a
+
+  # generate data 
+  experience = 10
+  with open("data_time.txt", "w") as f:
+      for n in range(100, 150):
+          t1 = 0
+          t2 = 0
+
+          selection_time = 0
+          insertion_time = 0
+
+          for i in range(experience):
+              t1 = time.time()
+              a = gen_array(n)
+              sort_selection(a)
+              t2 = time.time()
+              selection_time += t2-t1
+
+              t1 = time.time()
+              b = gen_array(n)
+              sort_selection(b)
+              t2 = time.time()
+              insertion_time += t2-t1
+
+          # compute the medium
+          selection_time /= experience
+          insertion_time /= experience
+
+          # print to the file "data_time.txt"
+          print(f.write( str(n)+" " ))
+          print(f.write( str(selection_time)+" " ))
+          print(f.write( str(insertion_time)+"\n" ))
+#+end_src
+
+In the code above, we only calculate for array of size $100$ up to
+$150$. Technically you can work for bigger size. Be aware that the
+bigger the size, the longer it takes to run.
+
+Lastly, we take this data and graph it in a Python library called
+~matplotlib~. I recommend writing a separate script for plotting
+the graph.
+
+#+begin_src python
+  import matplotlib.pyplot as plt
+  import csv
+
+  n = []
+  selection_algo = []
+  insertion_algo = []
+
+  with open('data_time.txt', 'r') as data:
+      plots = csv.reader(data, delimiter=' ')
+      for row in plots:
+          n.append(float(row[0]))
+          selection_algo.append(float(row[1]))
+          insertion_algo.append(float(row[2]))
+
+  plt.plot(n, selection_algo)
+  plt.plot(n, insertion_algo)
+  plt.show()
+#+end_src
+
+Here in my ~data_time.txt~ file, I calculated the time
+of array of size $100$ upto $1500$, and it gives the graph:
